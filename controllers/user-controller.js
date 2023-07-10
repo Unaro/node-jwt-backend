@@ -53,40 +53,23 @@ class UserController {
             res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
             return res.json(userData)
         } catch (e) {
+            console.log(e.message)
             next(e)
         }
     }
 
     async update(req, res, next) {
-        const {refreshToken} = req.cookies
-        try {
-            //доделать
-            const user = await userService.update(req.body)
-            const userData = await userService.refresh(refreshToken)
-            res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
-            return res.json(token)
-        } catch (e) {
-            next(e)
-        }
+
     }
 
     async delete(req, res, next) {
-        try {
-            const isDelete = await userService.delete(req)
-            
-            //разные действия для удаления у админа и пользователя
-            res.clearCookie('refreshToken')
-            return res.json(isDelete)
-        } catch (e) {
-            next(e)
-        }
         
     }
     
     async welcome(req, res, next) {
         res.status(200).json({message: "Страница пользователей"})
     }
-    
+
     async getUsers(req, res, next) {
         let {query, params} = req
         try {

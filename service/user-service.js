@@ -6,8 +6,8 @@ import tokenService from "./token-service.js"
 import Generator from "./generator.js"
 
 class UserService {
-    async registration(reportCard) {
-        const password = Generator.generatePassowrd(12)
+
+    async registration(reportCard, password, isRandom = false) {
         const candidate = await models.User.findOne({where: {reportCard}})
         
         // дописать когда появится api сибади
@@ -16,13 +16,13 @@ class UserService {
             throw ApiError.badRequest(`Пользователь с зачетной книжкой ${reportCard} уже зарегистрирован!`)
         }
         const hashPassword = await bcrypt.hash(password, 3)
-        const user = await models.User.create({reportCard, password: hashPassword})
+        const user = await models.User.create({reportCard, password: !isRandom ? hashPassword : Generator.generatePassowrd(12)})
         
         const userDto = new UserDto(user)
         const tokens = tokenService.generateTokens({...userDto})
         await tokenService.saveToken(userDto.id, tokens.refreshToken)
 
-        return {...tokens, user: userDto, password}
+        return {...tokens, user: userDto}
     }
 
     async login(reportCard, password) {
@@ -94,13 +94,14 @@ class UserService {
             if (user == null) {
                 throw ApiError.badRequest("Пользователя не существует")
             }
-        user.destroy()
+            user.destroy()
         })
         .finally(() => {
             return {message: "Аккаунт успешно удален"}
         })
         
     }
+
 
 }
 

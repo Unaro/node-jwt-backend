@@ -1,5 +1,5 @@
-class CMiddle {
-    static middle(req, res, next) {
+class CInfo {
+    static show(req, res, next) {
         console.log(new Client(req))
         next()
     }
@@ -8,15 +8,14 @@ class CMiddle {
 class Client {
     
     constructor(client) {
-        this.query = client.query
-        this.params = client.params
-        this.body = client.body
-        this.ip = client.ip
-        this.url = client.url
         this.method = client.method
+        this.ip = client.ip.startsWith('::ffff:') ? client.ip.slice(7) : client.ip
+        this.query = client.query
+        this.body = client.body
+        this.url = client.url
         this.baseUrl = client.baseUrl
         this.originalUrl = client.originalUrl
     }
 }
 
-export default CMiddle
+export default CInfo

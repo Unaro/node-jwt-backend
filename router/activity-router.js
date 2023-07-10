@@ -11,7 +11,7 @@ router.get('/view', ActivityController.getAll)
 router.get('/view/:name', ActivityController.getAll)
 
 router.post('/create', ActivityController.getAll)
-router.put('/update', ActivityController.getAll)
+router.post('/update', ActivityController.getAll)
 router.delete('/delete', ActivityController.getAll)
 
 export default router

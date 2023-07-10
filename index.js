@@ -1,11 +1,11 @@
 import sequelize from './db.js'
-import models from './models/user-model.js'
+import models from './models/main-model.js'
 import cors from 'cors'
 import express, { Router } from 'express'
 import cookieParser from 'cookie-parser'
 import router from './router/router.js'
 import dotenv from 'dotenv'
-import errorHandler from './middleware/errorHandlingMiddleware.js'
+import errorHandler from './middleware/errorHandling.middleware.js'
 dotenv.config()
 
 const PORT = process.env.PORT || 5000

@@ -1,11 +1,11 @@
 import { Router } from 'express'
 import userRouter from './user-router.js'
 import activityRouter from './activity-router.js'
-import CMiddle from '../middleware/customMiddleware.js'
+import CInfo from '../middleware/client-info.middleware.js'
 
 const router = new Router()
 
-router.use('/users', CMiddle.middle, userRouter)
+router.use('/users', CInfo.show, userRouter)
 router.use('/activity', activityRouter)
 
 export default router
