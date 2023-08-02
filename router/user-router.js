@@ -14,6 +14,6 @@ router.get('/refresh', UserController.refresh)
 router.post('/registration', UserController.create)
 
 router.get('/view', UserController.getUsers)
-router.get('/view/:id', UserController.getUsers)
+router.get('/view/:id', UserController.getOneUser)
 
 export default router

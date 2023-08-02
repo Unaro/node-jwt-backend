@@ -1,5 +1,5 @@
 import sequelize from '../db.js'
-import { DataTypes } from 'sequelize'
+import { DataTypes, NOW } from 'sequelize'
 
 const Comments = sequelize.define('comments', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
@@ -7,7 +7,8 @@ const Comments = sequelize.define('comments', {
 })
 
 const Activity = sequelize.define('activity', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true}
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    plan_date: {type: DataTypes.DATE, defaultValue: DataTypes.NOW}
 })
 
 const TypesOfActivity = sequelize.define('typesActivities', {
@@ -15,8 +16,8 @@ const TypesOfActivity = sequelize.define('typesActivities', {
     name: {type: DataTypes.STRING, unique: true, allowNull: false}
 })
 
-Activity.hasOne(TypesOfActivity)
-TypesOfActivity.belongsTo(Activity)
+TypesOfActivity.hasMany(Activity)
+Activity.belongsTo(TypesOfActivity)
 
 export default { 
     Activity, TypesOfActivity, Comments

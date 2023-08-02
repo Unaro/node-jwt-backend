@@ -6,10 +6,17 @@ class Generator {
         }
 
         let pass = ''
-        const symbols = 'qwertyuiopasdfghjkl;zxcvbnm[]:.>/<,~`!@#$%^&*()_-+=?QWERTYUIOPASDFGHJKLZXCVBNM}{"'
+        const symbols = [
+            'QWERTYUIOPASDFGHJKLZXCVBNM',
+            'qwertyuiopasdfghjklzxcvbnm',
+            '[]:.>/\\<,~`!@#$%^&*()_-+=?;}{"',
+            '0123456789'
+        ]
+
         for (let i = length; i > 0; i--) {
             let r = getRndInteger(0, symbols.length-1)
-            pass += symbols[r]
+            let rj = getRndInteger(0, symbols[r].length-1)
+            pass += symbols[r][rj]
         }
         return pass
     }

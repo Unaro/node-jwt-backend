@@ -7,11 +7,12 @@ const router = new Router()
 
 router.get('/', ActivityController.getAll)
 
-router.get('/view', ActivityController.getAll)
-router.get('/view/:name', ActivityController.getAll)
+router.get('/view/:userId', ActivityController.getUserActivity)
+router.get('/:activityId', ActivityController.getActivity)
 
 router.post('/create', ActivityController.getAll)
-router.post('/update', ActivityController.getAll)
+router.put('/update', ActivityController.getAll)
+
 router.delete('/delete', ActivityController.getAll)
 
 export default router

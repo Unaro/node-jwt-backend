@@ -11,7 +11,7 @@ class UserController {
         }
 
         const {reportCard, password} = req.body
-        if (reportCard == '') {
+        if (!reportCard) {
             return next(ApiError.badRequest("Пользователь не может быть пустым", errors.array()))
         }
 
@@ -71,7 +71,7 @@ class UserController {
     }
 
     async getUsers(req, res, next) {
-        let {query, params} = req
+        const {query, params} = req
         try {
             console.log(params)
             const users = await userService.getAllUsers({query, params})
@@ -79,7 +79,17 @@ class UserController {
         } catch (e) {
             next(e)
         }
+    }
+
+    async getOneUser(req, res, next) {
+        const userInfo = req
+        try {
+            const user = await userService.getOneUser(userInfo)
+            res.json(user)
+        } catch(e) {
+            next(e)
         }
+    }
 }
 
 export default new UserController

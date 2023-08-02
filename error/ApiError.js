@@ -12,12 +12,20 @@ class ApiError extends Error{
         return new ApiError(400, message, errors)
     }
 
+    static UserCreated(rc) {
+        return new ApiError(400, `Пользователь ${rc} уже существует!`)
+    }
+
     static UnauthorizedError() {
         return new ApiError(401, 'Пользователь не авторизован')
     }
 
     static forbidden(message) {
         return new ApiError(403, message)
+    }
+
+    static DoesNotExist() {
+        return new ApiError(404, 'Не удалось найти запрашиваемый ресурс 404!')
     }
 
     static internal(message) {
