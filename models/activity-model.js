@@ -11,7 +11,12 @@ const Activity = sequelize.define('activity', {
     plan_date: {type: DataTypes.DATE, defaultValue: DataTypes.NOW}
 })
 
-const TypesOfActivity = sequelize.define('typesActivities', {
+const TypesOfActivity = sequelize.define('activities_type', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    name: {type: DataTypes.STRING, unique: true, allowNull: false}
+})
+
+const SportType = sequelize.define('sport_types', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     name: {type: DataTypes.STRING, unique: true, allowNull: false}
 })
@@ -20,5 +25,5 @@ TypesOfActivity.hasMany(Activity)
 Activity.belongsTo(TypesOfActivity)
 
 export default { 
-    Activity, TypesOfActivity, Comments
+    Activity, TypesOfActivity, Comments, SportType
 }

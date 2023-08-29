@@ -1,7 +1,7 @@
 class authHandling {
-    check(req, res, next) {
+    async check(req, res, next) {
         if (!req.cookie) {
-            console.log('false')
+            console.log('noCookie')
         }
 
         next()

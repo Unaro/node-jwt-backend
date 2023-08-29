@@ -1,4 +1,4 @@
-import ActivityService from "../service/activity-service"
+import ActivityService from "../service/activity-service.js"
 
 class ActivityController {
     async getAll(req, res) {
