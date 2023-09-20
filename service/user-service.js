@@ -2,105 +2,118 @@ import ApiError from "../error/ApiError.js"
 import models from "../models/user-model.js"
 const {User} = models
 import bcrypt from 'bcrypt'
-import UserDto from "./user-dto.js"
-import tokenService from "./token-service.js"
-const {generateTokens, saveToken} = tokenService
 import Generator from "./generator.js"
+import UserChecker from "./user-checker.js"
+import activityModel from "../models/activity-model.js"
+import UserDto from "./user-dto.js"
 
 
 
 class UserService {
 
-    async registration(reportCard, password) {
+    async registration(login, password) {
         
-        let isAutogen
+        if (!login) throw ApiError.EmptyRequest()
+        if (await User.findOne({where: {login}})) throw ApiError.UserCreated(login)
+        
         if (!password) {
             password = Generator.generatePassowrd(12)
-            isAutogen = true
+            var isAutogen = true
         }
-        
-        const candidate = await User.findOne({where: {reportCard}})
-        // дописать когда появится api сибади
-        if (candidate) throw ApiError.UserCreated(reportCard)
-        const hashPassword = await bcrypt.hash(password, 3)
 
-        const user = await User.create({reportCard, password: hashPassword})
+        const hashPassword = await bcrypt.hash(password, 3)
         
-        const userDto = new UserDto(user)
-        const tokens = generateTokens({...userDto})
-        await saveToken(userDto.id, tokens.refreshToken)
+        // дописать когда появится api сибади
+        // не появится....
+
+        const user = await User.create({login, password: hashPassword})
         
-        if (isAutogen) userDto.generatePassowrd = password
-        return {...tokens, user: userDto}
+        if (isAutogen) user.generatedPassowrd = password
+        return user
     }
 
-    async login(reportCard, password) {
+    async delete(user) {
+        
+        if (!user) throw ApiError.badRequest("Пользователя не существует")
 
-        const user = await User.findOne({where: {reportCard}})
+        await user.destroy()
+        
+        return {message: "Аккаунт успешно удален"}
+    }
+
+    async login(login, password) {
+
+        const user = await User.findOne({where: {login}})
         if (!user) throw ApiError.badRequest('Пользователь с такой зачеткой еще не зарегистрирован')
         if (!await bcrypt.compare(password, user.password)) throw ApiError.badRequest('Неверный пароль')
-        const userDto = new UserDto(user)
-        const tokens = generateTokens({...userDto})
         
-        await saveToken(userDto.id, tokens.refreshToken)
-        return {...tokens, user: userDto}
+        return user
     }
 
-    async logout(refreshToken) {
-        if (!refreshToken) throw ApiError.UnauthorizedError()
-        const token = await tokenService.removeToken(refreshToken);
-        return token;
+    async update(newInfo, user) {
+        
+        const newUser = new UserChecker(user, newInfo)
+        if(Object.entries(newUser).length === 0) throw ApiError.EmptyRequest()
+        const updatedUser = new UserDto(await user.update({...newUser}), 2)
+        return {message: "Данные обновлены!", updatedUser}
     }
 
-    async refresh(refreshToken) {
-        if (!refreshToken) throw ApiError.UnauthorizedError()
+    //подумать над нужностью данной функции
+    // async refresh(refreshToken) {
         
-        const userData = tokenService.validateAccessToken(refreshToken)
-        const tokenFromDb = await tokenService.findToken(refreshToken)
-
-        if (!userData || !tokenFromDb) throw ApiError.UnauthorizedError()
-
-        const user = await User.findByPk(userData.id)
-        const userDto = new UserDto(user)
-        const tokens = generateTokens({...userDto})
-
-        await saveToken(userDto.id, tokens.refreshToken)
-        return {...tokens, user: userDto}
-    }
-
-    async getAllUsers({query, params}) {
-        if (Object.entries(query).length == 0 && Object.entries(params).length  == 0) return await User.findAll({attributes: ['id', 'reportCard', 'createdAt']})
+    //     if (!refreshToken) throw ApiError.UnauthorizedError()
         
-        const {limit, ...otherQuery} = query ? query : {limit: 50}
-        const id = params?.id
+    //     //Подумать над перемещением
+    //     const userData = tokenService.validateAccessToken(refreshToken)
+    //     const tokenFromDb = await tokenService.findToken(refreshToken)
+    //     if (!userData || !tokenFromDb) throw ApiError.UnauthorizedError()
+
+
+    //     const user = await User.findByPk(userData.id)
+    //     const userDto = new UserDto(user)
+    //     const tokens = generateTokens({...userDto})
+
+    //     await saveToken(userDto.id, tokens.refreshToken)
+    //     return {...tokens, user: userDto}
+    // }
+
+    async getAllUsersQuery({query, params}) {
+        
+        const {limit = 50, offeset = 0, ...otherQuery} = query ? query : {limit: 50}
+        
         const {_, rows} = await User.findAndCountAll({
-            where: {id, ...otherQuery},
-            attributes: ['id', 'reportCard', 'createdAt'],
-            limit
+            where: {id: params?.id, ...otherQuery},
+            attributes: ['id', 'login'],
+            limit,
+            offeset
         })
 
         return rows
     }
 
-    async getOneUser({query, params}) {
-        const {id} = params
+    async getAllUsers(limit, offeset) {
+        return await User.findAndCountAll({attributes: ['id', 'login'], limit, offeset})
+    }
+
+    async getUserByPk(id) {
         
-        const user = await User.findByPk(id)
+        if (!Number.isInteger(parseInt(id))) throw ApiError.badRequest("Неправильный тип запроса!")
+        
+        const user = await User.findByPk(id, {attributes: ["id", "login", "isStudy", "email", "firstname", "lastname", "patronymic", "height", "weight", "createdAt", "updatedAt"]})
         if (!user) throw ApiError.badRequest("Пользователь не найден")
+        
         return user
     }
 
-    async delete({body}) {
-        if (Object.entries(body).length == 0) throw ApiError.badRequest('Пустой запрос!')
+    async getUserByLogin(login) {
         
-        await User.findOne({where: {id: body.id, reportCard: body.reportCard}})
-        .then(user => {
-            if (user == null) throw ApiError.badRequest("Пользователя не существует")
-            user.destroy()
-        })
+        const user = await User.findOne({where: {login}, include: activityModel.SportType, attributes: ["id", "login", "isStudy", "email", "firstname", "lastname", "patronymic", "height", "weight", "createdAt", "updatedAt"]})
+        if (!user) throw ApiError.badRequest("Пользователь не найден")
         
-        return {message: "Аккаунт успешно удален"}
+        return user
     }
+
+
 
 
 }

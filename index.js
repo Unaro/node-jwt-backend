@@ -23,8 +23,8 @@ const promiseStart = new Promise((resolve, reject) => {
     sequelize.authenticate()
     .then(
         () => {
-            sequelize.sync()
-            resolve({message: `server connected to DB dev-backend`})
+            sequelize.sync({ force: true })
+            resolve({message: `server connected and sync to DB dev-backend`})
         })
     .catch(
         (e) => reject(new Error("DB connect failed"))

@@ -1,10 +1,12 @@
 import jwt from 'jsonwebtoken';
 import models from '../models/token-model.js';
+import ApiError from '../error/ApiError.js';
 
 class TokenService {
     generateTokens(payload) {
-        const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {expiresIn: '30m'})
-        const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {expiresIn: '30d'})
+        console.log(payload)
+        const accessToken = jwt.sign({payload}, process.env.JWT_ACCESS_SECRET, {expiresIn: '30m'})
+        const refreshToken = jwt.sign({payload}, process.env.JWT_REFRESH_SECRET, {expiresIn: '30d'})
         return {
             accessToken,
             refreshToken
@@ -13,10 +15,10 @@ class TokenService {
 
     validateAccessToken(token) {
         try {
-            const userData = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-            return userData;
+            const userData = jwt.verify(token, process.env.JWT_ACCESS_SECRET)
+            return userData
         } catch (e) {
-            return null;
+            throw ApiError.UnauthorizedError()
         }
     }
 
@@ -25,7 +27,7 @@ class TokenService {
             const userData = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
             return userData;
         } catch (e) {
-            return null;
+            throw ApiError.UnauthorizedError()
         }
     }
 
@@ -35,17 +37,21 @@ class TokenService {
             tokenData.refreshToken = refreshToken;
             return tokenData.save();
         }
+        //Требуется доработка
         const token = await models.Token.create({userId, refreshToken})
         return token;
     }
 
     async removeToken(refreshToken) {
-        const tokenData = await models.Token.destroy({where: {refreshToken}})
-        return tokenData;
+        if (!refreshToken) throw ApiError.UnauthorizedError()
+        
+        await models.Token.destroy({where: {refreshToken}})
+        return {message: "Вы успешно вышли из аккаунта!"}
     }
 
     async findToken(refreshToken) {
         const tokenData = await models.Token.findOne({where: {refreshToken}})
+        if (!tokenData) throw ApiError.EmptyRequest()
         return tokenData;
     }
 }

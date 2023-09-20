@@ -1,12 +1,30 @@
 import ApiError from "../error/ApiError.js"
 import activityModel from "../models/activity-model.js"
-const {Activity, TypesOfActivity, Comments} = activityModel
+const {Activity, TypesOfActivity, Comments, SportType} = activityModel
 import userModel from "../models/user-model.js"
 const {User} = userModel
 
 class ActivityService {
-    async createActivity(body) {
+    
+    async createActivity(planeDate, activitiesTypeId, sportTypeId, userId) {
+        const activity = await Activity.create({ planeDate, activitiesTypeId, sportTypeId, userId })
+        return activity
+    }
+
+    async findTypeActivity(id) {
         
+        const activityType = await TypesOfActivity.findByPk(id)
+        if (!activityType) throw ApiError.DoesNotExist()
+        
+        return activityType
+    }
+
+    async findTypeSport(id) {
+        
+        const sportType = await SportType.findByPk(id)
+        if (!sportType) throw ApiError.DoesNotExist()
+        
+        return sportType
     }
 
     async findActivity(activityId) {
@@ -25,4 +43,4 @@ class ActivityService {
     }
 }
 
-export default ActivityService
+export default new ActivityService

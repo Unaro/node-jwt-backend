@@ -24,6 +24,9 @@ const SportType = sequelize.define('sport_types', {
 TypesOfActivity.hasMany(Activity)
 Activity.belongsTo(TypesOfActivity)
 
+SportType.hasMany(Activity)
+Activity.belongsTo(SportType)
+
 export default { 
     Activity, TypesOfActivity, Comments, SportType
 }

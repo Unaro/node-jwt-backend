@@ -28,6 +28,10 @@ class ApiError extends Error{
         return new ApiError(404, 'Не удалось найти запрашиваемый ресурс 404!')
     }
 
+    static EmptyRequest() {
+        return new ApiError(404, 'Отправлен пустой запрос!')
+    }
+
     static internal(message) {
         return new ApiError(500, message)
     }

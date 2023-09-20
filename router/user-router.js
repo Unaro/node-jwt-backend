@@ -5,15 +5,18 @@ import authHandling from '../middleware/authHandling.moddleware.js'
 
 const router = new Router()
 
-router.get('/', UserController.welcome)
+router.get('/', UserController.getUsers)
+router.post('/', UserController.create)
+router.delete('/', UserController.delete)
+router.put('/', UserController.update)
 
 router.post('/login', UserController.login)
 router.delete('/logout', UserController.logout)
 router.get('/refresh', UserController.refresh)
 
-router.post('/registration', UserController.create)
+
 
 router.get('/view', UserController.getUsers)
-router.get('/view/:id', UserController.getOneUser)
 
+router.get('/view/:userIdOrLogin', UserController.getOneUser)
 export default router

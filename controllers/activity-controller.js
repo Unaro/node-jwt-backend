@@ -1,4 +1,5 @@
 import ActivityService from "../service/activity-service.js"
+import userService from "../service/user-service.js"
 
 class ActivityController {
     async getAll(req, res) {
@@ -25,10 +26,14 @@ class ActivityController {
         }
     }
 
-    async createActivity(req, res, next) {
-        const {body} = req
+    async create(req, res, next) {
+        const {planeDate, activitiesTypeId, sportTypeId, userId} = req.body
         try {
-            await ActivityService.createActivity(body)
+            const user = await userService.getUserByPk(userId)
+            const typeActivity = await ActivityService.findTypeActivity(activitiesTypeId)
+            const typeSport = await ActivityService.findTypeSport(sportTypeId)
+
+            await ActivityService.createActivity(planeDate, activitiesTypeId, sportTypeId, userId)
             return res.status(201).json({message: "Активность создана!"})
         } catch(e) {
             next(e)
