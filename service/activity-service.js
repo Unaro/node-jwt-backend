@@ -7,7 +7,12 @@ const {User} = userModel
 class ActivityService {
     
     async createActivity(planeDate, activitiesTypeId, sportTypeId, userId) {
-        const activity = await Activity.create({ planeDate, activitiesTypeId, sportTypeId, userId })
+        const activity = await Activity.create({ 
+                planeDate, 
+                activitiesTypeId, 
+                sportTypeId, 
+                userId 
+            })
         return activity
     }
 

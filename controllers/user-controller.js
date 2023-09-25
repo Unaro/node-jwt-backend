@@ -130,7 +130,8 @@ class UserController {
         
         try {
             const user = await userService.getUserByPk(userIdOrLogin)
-            res.json(user)
+            return res
+                    .json(user)
         } catch(e) {
             try {
                 const user = await userService.getUserByLogin(userIdOrLogin)
