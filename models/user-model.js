@@ -4,14 +4,20 @@ import { DataTypes } from 'sequelize'
 const User = sequelize.define('user', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     login: {type: DataTypes.STRING, unique: true, allowNull: false}, //reportCard
-    isStudy: {type: DataTypes.BOOLEAN, defaultValue: true},
     email: {type: DataTypes.STRING},
+    password: {type: DataTypes.STRING, allowNull: false}
+})
+
+const UserInfo = sequelize.define('user_info', {
     firstname: {type: DataTypes.STRING},
     lastname: {type: DataTypes.STRING},
     patronymic: {type: DataTypes.STRING},
     height: {type: DataTypes.FLOAT},
-    weight: {type: DataTypes.FLOAT},
-    password: {type: DataTypes.STRING, allowNull: false}
+}, {timestamps: false})
+
+const IMT = sequelize.define('user_imt', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    weight: {type: DataTypes.FLOAT}
 })
 
 const Scores = sequelize.define('scores', {
@@ -38,9 +44,12 @@ const AchievementUser = sequelize.define('achievement_user');
 User.hasMany(Scores)
 Scores.belongsTo(User)
 
-//Убран за ненадобностью
-//User.hasOne(UserInfo)
-//UserInfo.belongsTo(User)
+
+User.hasOne(UserInfo)
+UserInfo.belongsTo(User)
+
+User.hasMany(IMT)
+IMT.belongsTo(User)
 
 User.belongsToMany(Achievements, { through: AchievementUser })
 Achievements.belongsToMany(User, { through: AchievementUser })

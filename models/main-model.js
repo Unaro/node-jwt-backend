@@ -14,11 +14,11 @@ const UserSport = sequelize.define('user_sport', {}, { timestamps: false });
 userModel.User.belongsToMany(activityModel.SportType, { through: UserSport })
 activityModel.SportType.belongsToMany(userModel.User, { through: UserSport })
 
-userModel.User.hasMany(activityModel.Comments)
-activityModel.Comments.belongsTo(userModel.User)
+// userModel.User.hasMany(activityModel.Comments)
+// activityModel.Comments.belongsTo(userModel.User)
 
-activityModel.Activity.hasMany(activityModel.Comments)
-activityModel.Comments.belongsTo(activityModel.Activity)
+// activityModel.Activity.hasMany(activityModel.Comments)
+// activityModel.Comments.belongsTo(activityModel.Activity)
 
 userModel.User.hasOne(tokenModel.Token)
 tokenModel.Token.belongsTo(userModel.User)

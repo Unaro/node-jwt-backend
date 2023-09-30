@@ -15,6 +15,14 @@ class ActivityService {
             })
         return activity
     }
+    async createTypeActivity(name, scores) {
+        if (!name) throw ApiError.DoesNotExist()
+        
+        const tActivaty = await TypesOfActivity.create({
+            name, scores
+        })
+        return tActivaty
+    }
 
     async findTypeActivity(id) {
         
