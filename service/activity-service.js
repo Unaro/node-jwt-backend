@@ -18,13 +18,14 @@ class ActivityService {
     
     //написано переводчиком а не программистом 
     async deleteActivity(activity){
-        if(!activity) throw ApiError.DoesNotExist
+        if(!activity) throw ApiError.DoesNotExist()
         await activity.destroy()
         return {message: "Удалено"}
     }
 
+
     async createTypeActivity(name, scores) {
-        if (!name) throw ApiError.DoesNotExist
+        if (!name) throw ApiError.DoesNotExist()
         
         const activityType = await TypesOfActivity.create({
             name, scores
@@ -33,21 +34,21 @@ class ActivityService {
     }
     //написано переводчиком а не программистом 
     async deleteTypeActivity(activityType){
-        if(!activityType) throw ApiError.DoesNotExist
+        if(!activityType) throw ApiError.DoesNotExist()
         await activityType.destroy()
         return {message: "Удалено"}
     }
-    
+
     //не знаю надо ли
     async createTypeSport(name, scores){
-        if(!name) throw ApiError.DoesNotExist
+        if(!name) throw ApiError.DoesNotExist()
         const typeSport = await SportType.create({
             name, scores
         })
         return typeSport
     }
     async deleteTypeSport(typeSport){
-        if(!typeSport) throw ApiError.DoesNotExist
+        if(!typeSport) throw ApiError.DoesNotExist()
         await typeSport.destroy()
         return {message: "Удалено"}
     }
