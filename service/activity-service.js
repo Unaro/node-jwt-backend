@@ -52,6 +52,31 @@ class ActivityService {
         await typeSport.destroy()
         return {message: "Удалено"}
     }
+    
+    //обновление/изменение данных 
+    async updateActivity(newInfo, activity){
+        const exsitingActivity = findActivity(activity)
+        if(Object.entries(exsitingActivity).length === 0) throw ApiError.EmptyRequest()
+        // не особо сообразил но должно быть по типу 
+        // const updatedActivity = new activityDto(await activity.update({...existingActivity}), 2)
+        //return {message: "", updatedActivity}
+    }
+    async updateTypeActivity(newInfo, activityType){
+        const existTypeActivity = findTypeActivity(activityType)
+        if(Object.entries(existTypeActivity).length === 0) throw ApiError.EmptyRequest()
+        // не особо сообразил но должно быть по типу 
+        // const updatedTypeActivity = new activityDto(await activityType.update({...existTypeActivity}), 2)
+        //return {message: "", updatedTypeActivity}
+    }
+    async updateTypeSport(newInfo, sportType){
+        const existTypeSport = findTypeSport(sportType)
+        if(Object.entries(existTypeSport).length === 0) throw ApiError.EmptyRequest()
+        // не особо сообразил но должно быть по типу 
+        // const updatedTypeSport = new activityDto(await sportType.update({...existTypeSport}), 2)
+        //return {message: "", updatedTypeSport}
+    }
+
+
 
     async findTypeActivity(id) {
         
