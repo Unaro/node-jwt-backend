@@ -1,5 +1,5 @@
 import sequelize from '../db.js'
-import { DataTypes, NOW } from 'sequelize'
+import { DataTypes } from 'sequelize'
 
 // const Comments = sequelize.define('comments', {
 //     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
@@ -10,6 +10,7 @@ const Activity = sequelize.define('activity', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     plan_date: {type: DataTypes.DATE, defaultValue: DataTypes.NOW},
     timeline: {type: DataTypes.INTEGER, defaultValue: 0},
+    checkout: {type: DataTypes.BOOLEAN, defaultValue: false}
 })
 
 const TypesOfActivity = sequelize.define('activities_type', {
