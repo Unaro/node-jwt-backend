@@ -31,3 +31,5 @@ class MailSender {
     
 
 }
+
+export default new MailSender()

@@ -15,6 +15,12 @@ const UserInfo = sequelize.define('user_info', {
     height: {type: DataTypes.FLOAT},
 }, {timestamps: false})
 
+const UserStatistic = sequelize.define('statistic', {
+    amount: {type: DataTypes.INTEGER, defaultValue: 0}
+})
+
+const UserAchievments = sequelize.define('user_achievments')
+
 const IMT = sequelize.define('user_imt', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     weight: {type: DataTypes.FLOAT}
@@ -24,26 +30,18 @@ const Scores = sequelize.define('scores', {
     amount: {type: DataTypes.INTEGER, allowNull: false}
 })
 
-//Убран за ненадобностью
-//const UserInfo = sequelize.define('user_info', {  
-//}, { timestamps: false })
-
 const Role = sequelize.define('role', {
     name: {type: DataTypes.STRING, allowNull: false},
     roleRaiting: {type: DataTypes.INTEGER, allowNull: false}
 }, {timestamps: false})
 
-const Achievements = sequelize.define('achievements', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    name: {type: DataTypes.STRING, allowNull: false}
-})
-
 const RoleUser = sequelize.define('role_user', {}, { timestamps: false });
-const AchievementUser = sequelize.define('achievement_user');
+
+User.hasMany(UserStatistic)
+UserStatistic.belongsTo(User)
 
 User.hasMany(Scores)
 Scores.belongsTo(User)
-
 
 User.hasOne(UserInfo)
 UserInfo.belongsTo(User)
@@ -51,8 +49,8 @@ UserInfo.belongsTo(User)
 User.hasMany(IMT)
 IMT.belongsTo(User)
 
-User.belongsToMany(Achievements, { through: AchievementUser })
-Achievements.belongsToMany(User, { through: AchievementUser })
+User.hasMany(UserAchievments)
+UserAchievments.belongsTo(User)
 
 User.belongsToMany(Role, { through: RoleUser })
 Role.belongsToMany(User, { through: RoleUser })
@@ -62,5 +60,8 @@ Role.belongsToMany(User, { through: RoleUser })
 export default {
     User,
     Role,
-    Scores
+    Scores,
+    UserStatistic,
+    UserAchievments,
+    RoleUser
 }

@@ -20,6 +20,10 @@ class ApiError extends Error{
         return new ApiError(401, 'Пользователь не авторизован')
     }
 
+    static NotEnoughPermission() {
+        return new ApiError(401, 'Недостаточно прав!')
+    }
+
     static forbidden(message) {
         return new ApiError(403, message)
     }

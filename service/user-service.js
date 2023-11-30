@@ -1,6 +1,6 @@
 import ApiError from "../error/ApiError.js"
 import models from "../models/user-model.js"
-const {User} = models
+const {User, Role} = models
 import bcrypt from 'bcrypt'
 import Generator from "./generator.js"
 import UserChecker from "./user-checker.js"
@@ -44,8 +44,7 @@ class UserService {
     async login(login, password) {
 
         const user = await User.findOne({where: {login}})
-        if (!user) throw ApiError.badRequest('Пользователь с такой зачеткой еще не зарегистрирован')
-        if (!await bcrypt.compare(password, user.password)) throw ApiError.badRequest('Неверный пароль')
+        if (!user && !await bcrypt.compare(password, user.password)) throw ApiError.badRequest('Неверный логин или пароль!')
         
         return user
     }
@@ -91,15 +90,15 @@ class UserService {
         return rows
     }
 
-    async getAllUsers(limit, offeset) {
-        return await User.findAndCountAll({attributes: ['id', 'login'], limit, offeset})
+    async getAllUsers(limit, offset) {
+        return await User.findAndCountAll({attributes: ['id', 'login'], limit: limit || 50, offset})
     }
 
     async getUserByPk(id) {
         
         if (!Number.isInteger(parseInt(id))) throw ApiError.badRequest("Неправильный тип запроса!")
         
-        const user = await User.findByPk(id, {attributes: ["id", "login", "isStudy", "email", "firstname", "lastname", "patronymic", "height", "weight", "createdAt", "updatedAt"]})
+        const user = await User.findByPk(id, {attributes: ["id", "login", "email", "createdAt", "updatedAt"], include: [{model: Role}]})
         if (!user) throw ApiError.badRequest("Пользователь не найден")
         
         return user
@@ -107,14 +106,57 @@ class UserService {
 
     async getUserByLogin(login) {
         
-        const user = await User.findOne({where: {login}, include: activityModel.SportType, attributes: ["id", "login", "isStudy", "email", "firstname", "lastname", "patronymic", "height", "weight", "createdAt", "updatedAt"]})
+        const user = await User.findOne({where: {login}, include: activityModel.SportType, attributes: ["id", "login", "email", "createdAt", "updatedAt"]})
         if (!user) throw ApiError.badRequest("Пользователь не найден")
         
         return user
     }
 
+    //Рейтинг
 
+    async getProfileRaiting(userId) {
+        console.log(userId)
+        const raiting = await models.Scores.findAll({where: {userId}})
+       
+        
+        let value = 0
+        for (let score of raiting) {
+            value += score.amount
+        }
+        const result = {userId, scores: value || 0}
+        return result
+    }
 
+    async getRaiting(countUsers = 10) {
+        const {rows, count} = await models.Scores.findAndCountAll()
+        let result = []
+        let ids = {}
+        for (let score of rows) {
+            const user = await this.getUserByPk(score.userId)
+            if (!ids.hasOwnProperty(score.userId)) {
+                ids[user.id] = {login: user.login, scores: score.amount}
+            } else {
+                ids[user.id]["scores"] += score.amount
+            }
+        }    
+
+        for (let i in ids) {
+            result.push({id: +i, login: ids[i]["login"], scores: ids[i]["scores"]})
+        }
+        result = result.sort((a, b) => b.scores - a.scores)
+        if (result.length > countUsers) result.length = countUsers
+
+        return result
+    }
+
+    async addScores(activity) {
+        const userId = activity.userId
+        const activityId = activity.id
+
+        const score = await models.Scores.create({amount: 5, userId, activityId}) //Исправить кол-во баллов
+
+        return score
+    }
 
 }
 

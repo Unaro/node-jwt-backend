@@ -3,6 +3,9 @@ import ApiError from "../error/ApiError.js"
 import userService from "../service/user-service.js"
 import tokenService from "../service/token-service.js"
 import UserDto from "../service/user-dto.js"
+import roleService from "../service/role-service.js"
+import activityService from "../service/activity-service.js"
+import addUserStatistic from "../service/event_handlers/statisticEventEmmiter.js"
 
 class UserController {
     
@@ -15,6 +18,7 @@ class UserController {
             const userDto = new UserDto(user)
             const tokens = tokenService.generateTokens(userDto)
             await tokenService.saveToken(userDto.id, tokens.refreshToken)
+            userDto.role = await roleService.addRoleToUser(user, await roleService.findRole("USER"))
             
             return res
                     .status(201)
@@ -31,7 +35,6 @@ class UserController {
         
         try {
             const userDto = new UserDto(await userService.login(login, password))
-            
             const tokens = tokenService.generateTokens(userDto)
             await tokenService.saveToken(userDto.id, tokens.refreshToken)
             
@@ -52,7 +55,7 @@ class UserController {
             
             return res
                 .clearCookie('refreshToken')
-                .json({message})
+                .json(message)
         } catch (e) {
             next(e)
         }
@@ -82,8 +85,7 @@ class UserController {
         const newInfo = req.body
 
         try {
-            const {id} = req.body
-            const user = await userService.getUserByPk(id)
+            const user = req.userInfo
             const message = await userService.update(newInfo, user)
             
             return res
@@ -97,7 +99,12 @@ class UserController {
         const {id} = req.body
         
         try {
-            const message = await userService.delete(await userService.getUserByPk(id))
+            //все удаление еще не реализовано
+            const user = await userService.getUserByPk(id)
+            await roleService.deleteAllUserRoles(user.id)
+            await tokenService.destroyUserTokens(user.id)
+            await activityService.deleteAllUserActivity(user.id)
+            const message = await userService.delete(user)
             
             return res
                     .json(message)
@@ -111,13 +118,13 @@ class UserController {
         return res
                 .status(200)
                 .json({message: "Страница пользователей"})
-    }
+    }   
 
     async getUsers(req, res, next) {
         const {query, params} = req
         try {
             //Нужен разветвитель в зависимости от параметров и запросов
-            const users = await userService.getAllUsers() //getAllUsersQuery
+            const users = await userService.getAllUsers(query?.limit, query?.offset) //getAllUsersQuery
             return res
                     .json(users)
         } catch (e) {
@@ -144,4 +151,4 @@ class UserController {
     }
 }
 
-export default new UserController
+export default new UserController()

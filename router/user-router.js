@@ -7,16 +7,15 @@ const router = new Router()
 
 router.get('/', UserController.getUsers)
 router.post('/', UserController.create)
-router.delete('/', UserController.delete)
-router.put('/', UserController.update)
+router.delete('/', authHandling.isAdmin, UserController.delete)
+router.put('/', authHandling.isUser, UserController.update)
 
 router.post('/login', UserController.login)
 router.delete('/logout', UserController.logout)
 router.get('/refresh', UserController.refresh)
 
-
-
 router.get('/view', UserController.getUsers)
 
-router.get('/view/:userIdOrLogin', UserController.getOneUser)
+router.get('/user/:userIdOrLogin', UserController.getOneUser)
+
 export default router
