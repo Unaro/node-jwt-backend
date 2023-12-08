@@ -135,7 +135,7 @@ class ActivityService {
 
     async findAllActivites(params, mode = 0) {
         if (!params) throw ApiError.DoesNotExist()
-        const activities = Activity.findAll({where: { [Op.gte]: params.dateFrom, [Op.lte]: params.dateTo, userId: params.userId}})
+        const activities = Activity.findAll({where: { plan_date: {[Op.gte]: params.dateFrom, [Op.lte]: params.dateTo}, userId: params.userId}})
         if (!activities && mode != 1) throw ApiError.DoesNotExist()
         return activities
     }

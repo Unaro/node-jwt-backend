@@ -18,7 +18,7 @@ class statisticHandler{
             const statistic = await statisticService.addUserStatistic(user.id, param.id, args.count)
 
 
-            console.log(statistic)
+            console.log(statistic.message)
         } catch (e) {
             console.log(e)
         }
