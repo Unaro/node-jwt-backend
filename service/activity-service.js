@@ -2,6 +2,7 @@ import ApiError from "../error/ApiError.js"
 import activityModel from "../models/activity-model.js"
 import statisticEventEmmiter from "./event_handlers/statisticEventEmmiter.js"
 import statisticService from "./statistic-service.js"
+import { Op } from "sequelize"
 const _atributes = {
     plan_date: "plan_date", 
     timeline: "timeline",
@@ -133,7 +134,8 @@ class ActivityService {
     }
 
     async findAllActivites(params, mode = 0) {
-        const activities = Activity.findAll({where: params})
+        if (!params) throw ApiError.DoesNotExist()
+        const activities = Activity.findAll({where: { [Op.gte]: params.dateFrom, [Op.lte]: params.dateTo, userId: params.userId}})
         if (!activities && mode != 1) throw ApiError.DoesNotExist()
         return activities
     }

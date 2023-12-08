@@ -145,6 +145,17 @@ class ActivityController {
        
     }
 
+    async getActivityByDate(req, res, next) {
+        const {dateTo, dateFrom} = req.params
+
+        try {
+            const activities = await activityService.findAllActivites({dateFrom, dateTo, userId: req.userInfo.id})
+            return res.json(activities)
+        } catch (e) {
+            next(e)
+        }
+    }
+
     async updateActivity(req, res, next) {
         if (req.body == null) throw ApiError.EmptyRequest()
         const {activityId, activitiesTypeId, sportTypeId, planeDate, timeline} = req.body

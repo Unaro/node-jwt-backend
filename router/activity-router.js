@@ -1,11 +1,13 @@
 import { Router } from 'express'
 import ActivityController from '../controllers/activity-controller.js'
+import AuthHandling from '../middleware/authHandling.moddleware.js'
 
 const router = new Router()
 
 //Не реализовано полноценно
 
 router.get('/', ActivityController.getAll)
+router.get('/date', AuthHandling.isUser, ActivityController.getActivityByDate)
 
 router.get('/user/:userId', ActivityController.getUserActivity)
 router.get('/:activityId', ActivityController.getActivity)
