@@ -11,7 +11,7 @@ class StatisticController {
     async addStatisticToUserById(req, res, next) {
         const {statisticId, amount = 1, userId = null} = req.body
         let result = {statisticId, amount, isAdmin: false, isCurrentUser: false}
-        try {
+//        try {
 
             if (req.userInfo.id == userId) {
                 result.isCurrentUser = true 
@@ -28,9 +28,9 @@ class StatisticController {
             }
             
             return res.json(result)
-        } catch (e) {
-            next(e)
-        }
+//        } catch (e) {
+//            next(e)
+//        }
     }
 }
 

@@ -6,6 +6,7 @@ import Generator from "./generator.js"
 import UserChecker from "./user-checker.js"
 import activityModel from "../models/activity-model.js"
 import UserDto from "./user-dto.js"
+import userModel from "../models/user-model.js"
 
 
 
@@ -52,11 +53,19 @@ class UserService {
     async update(newInfo, user) {
         
         const newUser = new UserChecker(user, newInfo)
-        if(Object.entries(newUser).length === 0) throw ApiError.EmptyRequest()
+        if (Object.entries(newUser).length === 0) throw ApiError.EmptyRequest()
         const updatedUser = new UserDto(await user.update({...newUser}), 2)
         return {message: "Данные обновлены!", updatedUser}
     }
 
+    async updateIMT(userId, weight) {
+        
+        if (!userId || !weight) throw ApiError.EmptyRequest()
+        const imt = await userModel.IMT.create({userId, weight})
+
+        return imt
+    }
+    
     //подумать над нужностью данной функции
     // async refresh(refreshToken) {
         

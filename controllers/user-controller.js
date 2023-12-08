@@ -6,6 +6,7 @@ import UserDto from "../service/user-dto.js"
 import roleService from "../service/role-service.js"
 import activityService from "../service/activity-service.js"
 import addUserStatistic from "../service/event_handlers/statisticEventEmmiter.js"
+import userModel from "../models/user-model.js"
 
 class UserController {
     
@@ -148,6 +149,19 @@ class UserController {
                 next(e)
             }
         }
+    }
+
+    async updateIMT(req, res, next) {
+        const {userId, weight} = req.body
+        
+        try {
+            const created = await userService.updateIMT(userId, weight)
+
+            return res.json(created)
+        } catch (e) {
+            next(e)
+        }
+        
     }
 }
 

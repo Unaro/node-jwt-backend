@@ -9,6 +9,8 @@ router.get('/', UserController.getUsers)
 router.post('/', UserController.create)
 router.delete('/', authHandling.isAdmin, UserController.delete)
 router.put('/', authHandling.isUser, UserController.update)
+router.post('/weight', UserController.updateIMT)
+
 
 router.post('/login', UserController.login)
 router.delete('/logout', UserController.logout)

@@ -50,7 +50,7 @@ class StatisticService {
                         include: {model: achivmentsModel.AchievmentParams,  attributes: ["id", "target", "paramId"]}}}
                 }
             })
-
+        
         if (statisticUser.amount >= statisticUser.param.achievment_params[0].target) {
             for (const achievmentParam of statisticUser.param.achievment_params) {
                 const filtered = []
@@ -61,7 +61,11 @@ class StatisticService {
                 for (const param of achievmentParam.achievement.achievment_params) {
                     
                     const localStat = await userModel.UserStatistic.findOne({where: {userId, paramId: param.paramId}})
-    
+                    
+                    if (!localStat) {
+                        filtered.push(false) 
+                        break
+                    }   
                     if (localStat.amount >= param.target) {
                         filtered.push(true)
                     } else {
@@ -71,7 +75,6 @@ class StatisticService {
     
                 }
                 if (!filtered.includes(false)) await userModel.UserAchievments.create({achievementId: achievmentParam.achievement.id, userId})
-                console.log(filtered)
             }
         }
         

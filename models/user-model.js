@@ -63,5 +63,6 @@ export default {
     Scores,
     UserStatistic,
     UserAchievments,
-    RoleUser
+    RoleUser,
+    IMT
 }

@@ -19,6 +19,13 @@ class AchievmentController {
         }
         
     }
+
+    async getUserAchievements(req, res, next) {
+        const {id} = req.userInfo
+        const achievemnts = await achivmentsService.GetUserAchievements(id)
+    
+        return res.json(achievemnts)
+    }
 }
 
 export default new AchievmentController

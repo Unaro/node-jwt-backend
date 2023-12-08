@@ -1,5 +1,6 @@
 import ApiError from "../error/ApiError.js";
 import achivmentsModel from "../models/achivments-model.js";
+import userModel from "../models/user-model.js";
 
 class KeyFormatter {
     static TextShape(value = "") {
@@ -57,6 +58,11 @@ class AchivmentsService {
         return achievements
     }
 
+    async GetUserAchievements(userId) {
+        const achievements = await userModel.UserAchievments.findAll({where: {userId}})
+
+        return achievements
+    }
 }
 
 export default new AchivmentsService
