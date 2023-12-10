@@ -6,7 +6,7 @@ import authHandling from '../middleware/authHandling.moddleware.js'
 const router = new Router()
 
 router.get('/', UserController.getUsers)
-router.post('/', UserController.create)
+router.post('/', authHandling.isStudent, UserController.create)
 router.delete('/', authHandling.isAdmin, UserController.delete)
 router.put('/', authHandling.isUser, UserController.update)
 router.post('/weight', UserController.updateIMT)
